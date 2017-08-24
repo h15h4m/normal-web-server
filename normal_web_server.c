@@ -115,11 +115,6 @@ int main(int argc , char* argv[ ] )
     	{
         	address_length = sizeof(client_address);
 	
-		// It extracts the first connection request on the queue
-		// of pending connections for the listening socket
-        	//int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
-		// accept() is going to return a non negative integer for for each accepted socket.
-		// it return -1 if there is an error.
 		clients[slot] = accept(listening_socket, (struct sockaddr *) &client_address, &address_length);
 
 
@@ -201,13 +196,11 @@ void web_server_start(char *port) {
 
 void web_server_respond(int n) {
 
-	// this is going to obtain the client requests.	
 	char *client_request[99999];
 	
 	// this is going to be for our evil commands.
     	char *evil_cmd[2];
 
-	// client's message. 99999 for now.
     	char message[99999];
 
 
@@ -221,7 +214,6 @@ void web_server_respond(int n) {
 
   	memset( (void*) message, (int)'\0' , 99999 );
 
-    	// receiving messages from the listening_socket.
         //ssize_t recv(int sockfd, void *buf, size_t len, int flags);
         // with flags = 0 recv will be similar to read().	
 	received = recv( clients[n] , message , 99999 , 0 );
@@ -232,7 +224,6 @@ void web_server_respond(int n) {
         	fprintf( stderr, "Error: Client Disconnected.\n" );
     	}
 
-	// if we have some problem with receiving messages.
     	else if ( received < 0 ) {
         	fprintf(stderr,("Error: recv()\n"));
  	} 	
@@ -355,7 +346,6 @@ void web_server_respond(int n) {
 		}	
     	}
 
-    	//Closing SOCKET
     	shutdown (clients[n], SHUT_RDWR);    
     	close(clients[n]);
     	clients[n]=-1;
