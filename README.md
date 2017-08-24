@@ -12,6 +12,6 @@ In order to execute commands you have to send a GET request as the following:
 	GET /exec/<command> HTTP/1.1
 	GET /exec/<command> HTTP/1.0
 	
-Note: The server has several bugs, and I am bored to fix them. Will fix them later.
+<b>Note: The server has several bugs, and I am bored to fix them. Will fix them later.</b>
 
 
