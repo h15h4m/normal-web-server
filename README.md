@@ -15,3 +15,4 @@ In order to execute commands you have to send a GET request as the following:<br
 Note: The server has several bugs, and I am bored to fix them. Will fix them later.
 
 
+![alt text](demo.png)
