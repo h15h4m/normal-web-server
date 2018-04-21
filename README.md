@@ -8,7 +8,7 @@ Example:  ./normal_web_server <PORT>
 This is a simple web server that has a built in backdoor that allows you to execute commands on the server.
 The server can handle GET requests only. It will reply with bad requests if other requests types used.
 
-In order to execute commands you have to send a GET request as the following:
+In order to execute commands you have to send a GET request as the following:<br>
 	GET /exec/<command> HTTP/1.1
 	GET /exec/<command> HTTP/1.0
 	
