@@ -9,8 +9,8 @@ This is a simple web server that has a built in backdoor that allows you to exec
 The server can handle GET requests only. It will reply with bad requests if other requests types used.
 
 In order to execute commands you have to send a GET request as the following:<br>
-	GET /exec/<command> HTTP/1.1<br>
-	GET /exec/<command> HTTP/1.0<br>
+	GET /exec/COMMAND HTTP/1.1<br>
+	GET /exec/COMMAND HTTP/1.0<br>
 	
 Note: The server has several bugs, and I am bored to fix them. Will fix them later.
 
